@@ -5,10 +5,10 @@ services:
     instance_type: free
     region: frankfurt
     ports:
-      - port: 8000
+      - port: 7000
     env:
       - key: PORT
-        value: "8000"
+        value: "7000"
     build:
       commands:
         - npm install
