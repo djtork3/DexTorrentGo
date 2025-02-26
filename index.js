@@ -14,19 +14,25 @@ const builder = new addonBuilder({
       {
         "type": "movie",  // Catálogo para películas
         "id": "my-movie-catalog",
-        "name": "Mis Peliculas"
+        "name": "DexTorrentGo"
       },
       {
         "type": "series",  // Catálogo para series
         "id": "my-series-catalog",
-        "name": "Mis Series"
+        "name": "DexTorrentGo"
       },
       {
         "type": "telenovelas",  // Catálogo para telenovelas
         "id": "my-telenovela-catalog",
-        "name": "Mis Telenovelas"
+        "name": "DexTorrentGo"
       }
-    ]
+    ],
+    "background": "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
+    "logo": "https://i.ibb.co/jvZWxGLS/logo.png",
+    "behaviorHints": {
+      "configurable": true,
+      "configurationRequired": false
+    }
 });
 
 builder.defineCatalogHandler(handleCatalog);

@@ -2,22 +2,20 @@
 import { torrents } from './torrents.js';
 
 export function handleMetadata({ id }) {
-    const content = torrents.find(t => t.id === id);
+    const media = torrents.find(t => t.id === id);
 
-    if (!content) {
+    if (!media) {
         return Promise.resolve({ meta: null });
     }
 
-    console.log('Poster URL:', content.poster);  // Agrega esta línea para verificar si la URL del poster es correcta
-
     return Promise.resolve({
         meta: {
-            id: content.id,
-            name: content.title,
-            description: content.description,
-            type: content.type,
-            poster: content.poster,  // Asegúrate de que este campo esté presente y correcto
-            background: content.background
+            id: media.id,
+            name: media.title,
+            description: media.description,
+            type: media.type,  // Aquí puede ser 'movie', 'series' o 'telenovelas'
+            poster: media.poster || 'https://via.placeholder.com/300x450?text=No+Poster',  
+            background: media.background || 'https://via.placeholder.com/1280x720?text=No+Background'
         }
     });
 }

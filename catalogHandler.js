@@ -9,7 +9,8 @@ export function handleCatalog({ type }) {
         metas: filteredTorrents.map(t => ({
             id: t.id,
             name: t.title,
-            type: t.type  // Se adapta al tipo de contenido
+            type: t.type,
+            poster: t.poster || 'https://via.placeholder.com/300x450?text=No+Poster'
         }))
     });
 }
