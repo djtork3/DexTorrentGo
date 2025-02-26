@@ -1,1 +1,1 @@
-web: node index.js & node server.js
+web: node index.js & sleep 5 && node server.js

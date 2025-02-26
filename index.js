@@ -5,7 +5,7 @@ import { handleMetadata } from './metadataHandler.js';
 import { handleStream } from './streamHandler.js';
 import { handleCatalog } from './catalogHandler.js';
 
-const port = process.env.PORT || 7000; // Usar el puerto asignado por Koyeb
+const port = process.env.PORT || 8000; // Usar el puerto asignado por Koyeb
 
 const builder = new addonBuilder({
     "id": "My-DexTorrentGo",

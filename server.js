@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import { torrents } from './torrents.js';
 
 const app = express();
-const port = process.env.PORT || 7001; // Usar el puerto asignado por Koyeb
+const port = process.env.PORT || 8001; // Usar el puerto asignado por Koyeb
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
