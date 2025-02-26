@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"node index.js\" \"node server.js\""
-  },
+  "start": "npx forever start index.js && npx forever start server.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
     "concurrently": "^9.1.2",
+    "forever": "^4.0.3",
     "parse-torrent": "^11.0.18",
     "stremio-addon-sdk": "^1.6.10"
   }
