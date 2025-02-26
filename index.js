@@ -1,3 +1,5 @@
+
+// index.js
 import pkg from 'stremio-addon-sdk';
 const { addonBuilder, serveHTTP } = pkg;
 import { handleMetadata } from './metadataHandler.js';

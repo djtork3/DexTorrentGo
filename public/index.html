@@ -1,0 +1,102 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DexTorrentGo - Añadir Torrents</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
+        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; }
+        button:hover { background-color: #218838; }
+        .torrent-list { margin-top: 20px; }
+        .torrent-item { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>DexTorrentGo - Añadir Torrents</h1>
+
+    <h2>Añadir un nuevo Torrent</h2>
+    <form id="torrentForm">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" required>
+
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="magnet">Magnet Link:</label>
+        <input type="text" id="magnet" name="magnet" required>
+
+        <label for="description">Descripción:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="type">Tipo (movie, series, telenovelas):</label>
+        <input type="text" id="type" name="type" required>
+
+        <label for="poster">Poster URL:</label>
+        <input type="text" id="poster" name="poster">
+
+        <label for="background">Background URL:</label>
+        <input type="text" id="background" name="background">
+
+        <button type="submit">Añadir Torrent</button>
+    </form>
+
+    <div class="torrent-list">
+        <h2>Torrents Añadidos</h2>
+        <ul id="torrentList"></ul>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById('torrentForm');
+            const torrentList = document.getElementById('torrentList');
+
+            // Función para cargar torrents
+            const loadTorrents = async () => {
+                const response = await fetch('/api/torrents');
+                const torrents = await response.json();
+
+                torrentList.innerHTML = torrents.map(torrent => 
+                    `<li class="torrent-item">
+                        <strong>${torrent.title}</strong> (ID: ${torrent.id})<br>
+                        <a href="${torrent.magnet}" target="_blank">Magnet Link</a><br>
+                        ${torrent.description}<br>
+                        <img src="${torrent.poster}" alt="Poster" width="100"><br>
+                        <small>Tipo: ${torrent.type}</small>
+                    </li>`
+                ).join('');
+            };
+
+            // Cargar torrents al inicio
+            loadTorrents();
+
+            // Enviar el formulario para añadir un nuevo torrent
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const data = new FormData(form);
+                const torrentData = {};
+                data.forEach((value, key) => { torrentData[key] = value; });
+
+                const response = await fetch('/api/torrents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(torrentData)
+                });
+
+                if (response.ok) {
+                    alert('Torrent añadido correctamente');
+                    loadTorrents();  // Recargar la lista de torrents
+                    form.reset();  // Limpiar el formulario
+                } else {
+                    alert('Hubo un error al añadir el torrent');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
