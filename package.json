@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "concurrently \"node index.js\" \"node server.js\"",
+    "index": "node index.js",
+    "server": "node server.js"
   },
   "keywords": [],
   "author": "",
