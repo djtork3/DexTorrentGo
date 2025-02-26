@@ -1,0 +1,16 @@
+name: dextorrentgo
+services:
+  - name: dextorrentgo
+    type: web
+    instance_type: free
+    region: frankfurt
+    ports:
+      - port: 8000
+    env:
+      - key: PORT
+        value: "8000"
+    build:
+      commands:
+        - npm install
+    run:
+      command: node index.js & node server.js
