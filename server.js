@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import { torrents } from './torrents.js';  // Asegúrate de que el archivo torrents.js está bien exportado
 
 const app = express();
-const port = 7001;
 
 // Middleware para parsear JSON
 app.use(bodyParser.json());
@@ -27,6 +26,7 @@ app.post('/api/torrents', (req, res) => {
     res.status(201).json(newTorrent);  // Devuelve el torrent agregado
 });
 
+const port = process.env.PORT || 7001;
 app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+    console.log(`Server is running on port ${port}`);
 });
