@@ -41,6 +41,4 @@ builder.defineCatalogHandler(handleCatalog);
 builder.defineStreamHandler(handleStream);
 builder.defineMetaHandler(handleMetadata);
 
-const port = process.env.PORT || 7000; // Usar el puerto asignado por Koyeb
-serveHTTP(builder.getInterface(), { port });
-
+serveHTTP(builder.getInterface(), { port: 7000 });
