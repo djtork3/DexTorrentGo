@@ -25,7 +25,7 @@ const builder = new addonBuilder({
   name: "DexTorrentGo",
   version: "1.0.4",
   resources: ["catalog", "stream", "meta"],
-  types: ["movie", "series"],
+  types: ["movie", "series", "telenovelas"],
   catalogs: [
     {
       type: "movie",
@@ -38,7 +38,13 @@ const builder = new addonBuilder({
       id: "series",
       name: "Series",
       extra: [{ name: "search", isRequired: false }]
-    }
+    },
+    {
+        type: "telenovelas",
+        id: "telenovelas",
+        name: "Telenovelas",
+        extra: [{ name: "search", isRequired: false }]
+      }
   ],
   background: "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
   logo: "https://i.ibb.co/jvZWxGLS/logo.png",
@@ -64,13 +70,13 @@ app.get('/api/torrents', (req, res) => {
 });
 
 app.post('/api/torrents', (req, res) => {
-    const { id, title, magnet, description, type, poster, background } = req.body;
+    const { id, title, magnet, description, poster, background, type } = req.body;
 
     if (!id || !title || !magnet || !description || !type) {
         return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
-    const newTorrent = { id, title, magnet, description, type, poster, background };
+    const newTorrent = { id, title, magnet, description, poster, background, type };
     torrents.push(newTorrent);
     saveTorrents();  // Guardar los torrents en el archivo
 
