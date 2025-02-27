@@ -40,12 +40,14 @@ const builder = new addonBuilder({
       extra: [{ name: "search", isRequired: false }]
     }
   ],
-  background: "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
-  logo: "https://i.ibb.co/jvZWxGLS/logo.png",
-  behaviorHints: {
+
+    background: "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
+    logo: "https://i.ibb.co/jvZWxGLS/logo.png",
+    behaviorHints: {
     configurable: true,
-    configurationRequired: false
-  }
+    configurationRequired: false,
+    configurationUrl: "index.html"  // Aquí puedes poner la URL de la página principal
+}
 });
 
 // Handlers
