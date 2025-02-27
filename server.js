@@ -26,7 +26,7 @@ app.post('/api/torrents', (req, res) => {
     res.status(201).json(newTorrent);  // Devuelve el torrent agregado
 });
 
-const port = process.env.PORT || 7001;
+const port = process.env.PORT || 10000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
