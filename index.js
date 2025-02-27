@@ -41,4 +41,4 @@ builder.defineCatalogHandler(handleCatalog);
 builder.defineStreamHandler(handleStream);
 builder.defineMetaHandler(handleMetadata);
 
-serveHTTP(builder.getInterface(), { port: 10000 });
+serveHTTP(builder.getInterface(), { port: 7000 });
