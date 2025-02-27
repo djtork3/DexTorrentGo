@@ -5,7 +5,7 @@ import { handleStream } from './streamHandler.js';
 import { handleCatalog } from './catalogHandler.js';
 
 const { addonBuilder, serveHTTP } = pkg;
-const ADDON_PORT = 7000;
+const ADDON_PORT = 5000;
 const SERVER_PORT = 10000;
 
 // Crear el addon Stremio
