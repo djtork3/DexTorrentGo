@@ -1,4 +1,3 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,14 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DexTorrentGo - Añadir Torrents</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; }
-        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
-        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; }
-        button:hover { background-color: #218838; }
-        .torrent-list { margin-top: 20px; }
-        .torrent-item { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #141414;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #e50914;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaaaaa;
+        }
+        input, textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #333333;
+            background-color: #1f1f1f;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #e50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #cc0813;
+        }
+        .torrent-list {
+            margin-top: 20px;
+        }
+        .torrent-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            background-color: #1f1f1f;
+        }
+        .torrent-item strong {
+            color: #e50914;
+        }
+        .torrent-item a {
+            color: #e50914;
+            text-decoration: none;
+        }
+        .torrent-item a:hover {
+            text-decoration: underline;
+        }
+        .torrent-item img {
+            margin-top: 10px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -60,7 +113,7 @@
                 const response = await fetch('/api/torrents');
                 const torrents = await response.json();
 
-                torrentList.innerHTML = torrents.map(torrent => 
+                torrentList.innerHTML = torrents.map(torrent =>
                     `<li class="torrent-item">
                         <strong>${torrent.title}</strong> (ID: ${torrent.id})<br>
                         <a href="${torrent.magnet}" target="_blank">Magnet Link</a><br>
@@ -93,7 +146,8 @@
                     loadTorrents();  // Recargar la lista de torrents
                     form.reset();  // Limpiar el formulario
                 } else {
-                    alert('Hubo un error al añadir el torrent');
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.error}`);
                 }
             });
         });

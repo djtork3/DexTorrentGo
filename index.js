@@ -7,7 +7,7 @@ import { networkInterfaces } from 'os';
 import { handleCatalog } from './catalogHandler.js';
 import { handleStream } from './streamHandler.js';
 import { handleMetadata } from './metadataHandler.js';
-import { torrents } from './torrents.js';
+import { torrents, saveTorrents } from './torrents.js';
 
 const { addonBuilder } = pkg;
 const app = express();
@@ -59,6 +59,24 @@ const addonInterface = builder.getInterface();
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+app.get('/api/torrents', (req, res) => {
+    res.json(torrents);
+});
+
+app.post('/api/torrents', (req, res) => {
+    const { id, title, magnet, description, type, poster, background } = req.body;
+
+    if (!id || !title || !magnet || !description || !type) {
+        return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    const newTorrent = { id, title, magnet, description, type, poster, background };
+    torrents.push(newTorrent);
+    saveTorrents();  // Guardar los torrents en el archivo
+
+    res.status(201).json(newTorrent);
+});
+
 // Endpoints del addon
 app.get('/manifest.json', (req, res) => {
   res.set({
@@ -92,7 +110,6 @@ app.get('/:resource(meta|stream|catalog)/:type/:id.json', async (req, res) => {
     }
 });
 
-
 // Endpoint de estado
 app.get('/status', (req, res) => {
   res.json({
@@ -110,7 +127,7 @@ const startServer = (port = 10000) => {
     console.log(`🔄 Puerto ${port} ocupado, probando ${port + 1}`);
     startServer(port + 1);
   });
-  
+
   server.once('listening', () => {
     server.close(() => {
       app.listen(port, '0.0.0.0', () => {
@@ -130,7 +147,7 @@ const startServer = (port = 10000) => {
       });
     });
   });
-  
+
   server.listen(port);
 };
 
