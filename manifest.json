@@ -1,0 +1,16 @@
+{
+    "id": "My-DexTorrentGo",
+    "name": "DexTorrentGo",
+    "version": "1.0.2",
+    "description": "Addon para Stremio con torrents",
+    "resources": ["catalog", "stream", "meta"],
+    "types": ["movie", "series", "telenovelas"],
+    "catalogs": [
+      { "type": "movie", "id": "my-movie-catalog", "name": "DexTorrentGo" },
+      { "type": "series", "id": "my-series-catalog", "name": "DexTorrentGo" },
+      { "type": "telenovelas", "id": "my-telenovela-catalog", "name": "DexTorrentGo" }
+    ],
+    "background": "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
+    "logo": "https://i.ibb.co/jvZWxGLS/logo.png",
+    "behaviorHints": { "configurable": true, "configurationRequired": false }
+}
