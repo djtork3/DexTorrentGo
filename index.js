@@ -1,12 +1,15 @@
+import { spawn } from 'child_process';
 import pkg from 'stremio-addon-sdk';
 import { handleMetadata } from './metadataHandler.js';
 import { handleStream } from './streamHandler.js';
 import { handleCatalog } from './catalogHandler.js';
 
 const { addonBuilder, serveHTTP } = pkg;
-const PORT = process.env.PORT || 10000;
+const ADDON_PORT = 7000;
+const SERVER_PORT = 10000;
 
-const manifest = {
+// Crear el addon Stremio
+const builder = new addonBuilder({
   "id": "My-DexTorrentGo",
   "name": "DexTorrentGo",
   "version": "1.0.2",
@@ -20,14 +23,19 @@ const manifest = {
   "background": "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
   "logo": "https://i.ibb.co/jvZWxGLS/logo.png",
   "behaviorHints": { "configurable": true, "configurationRequired": false }
-};
+});
 
-const builder = new addonBuilder(manifest);
 builder.defineCatalogHandler(handleCatalog);
 builder.defineStreamHandler(handleStream);
 builder.defineMetaHandler(handleMetadata);
 
-serveHTTP(builder.getInterface(), { port: PORT });
+// Iniciar el addon en un puerto separado
+serveHTTP(builder.getInterface(), { port: ADDON_PORT });
+console.log(`✅ Addon disponible en http://localhost:${ADDON_PORT}/manifest.json`);
 
-console.log(`✅ Addon corriendo en el puerto ${PORT}`);
-console.log(`✅ Manifest accesible en http://localhost:${PORT}/manifest.json`);
+// Iniciar el servidor web como un proceso hijo
+const serverProcess = spawn('node', ['server.js'], { stdio: 'inherit' });
+
+serverProcess.on('close', (code) => {
+  console.log(`❌ Servidor Express cerrado con código ${code}`);
+});
