@@ -1,35 +1,49 @@
-import express from 'express';
-import fs from 'fs';
-import pkg from 'stremio-addon-sdk';
+import { addonBuilder, serveHTTP } from 'stremio-addon-sdk';
 import { handleMetadata } from './metadataHandler.js';
 import { handleStream } from './streamHandler.js';
 import { handleCatalog } from './catalogHandler.js';
 
-const { addonBuilder, serveHTTP } = pkg;
 const PORT = process.env.PORT || 10000;
-const app = express();
 
-// 📌 Servir manifest.json manualmente
-app.get('/manifest.json', (req, res) => {
-    fs.readFile('./manifest.json', (err, data) => {
-        if (err) {
-            res.status(500).send('Error al cargar el manifest');
-        } else {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(data);
-        }
-    });
+// 📌 Definir el manifest directamente en el código (puedes cambiarlo si es necesario)
+const builder = new addonBuilder({
+    "id": "My-DexTorrentGo",
+    "name": "DexTorrentGo",
+    "version": "1.0.2",
+    "resources": ["catalog", "stream", "meta"],
+    "types": ["movie", "series", "telenovelas"],
+    "catalogs": [
+      {
+        "type": "movie",
+        "id": "my-movie-catalog",
+        "name": "DexTorrentGo"
+      },
+      {
+        "type": "series",
+        "id": "my-series-catalog",
+        "name": "DexTorrentGo"
+      },
+      {
+        "type": "telenovelas",
+        "id": "my-telenovela-catalog",
+        "name": "DexTorrentGo"
+      }
+    ],
+    "background": "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
+    "logo": "https://i.ibb.co/jvZWxGLS/logo.png",
+    "behaviorHints": {
+      "configurable": true,
+      "configurationRequired": false
+    }
 });
 
-// 📌 Construir el Addon de Stremio
-const manifest = JSON.parse(fs.readFileSync('./manifest.json'));
-const builder = new addonBuilder(manifest);
+// 📌 Definir los manejadores del addon
 builder.defineCatalogHandler(handleCatalog);
 builder.defineStreamHandler(handleStream);
 builder.defineMetaHandler(handleMetadata);
 
-// 📌 Servir el addon en el puerto correcto
+// 📌 Iniciar el servidor del addon con Stremio (sin Express)
 serveHTTP(builder.getInterface(), { port: PORT });
 
-console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+console.log(`✅ Servidor Stremio corriendo en http://localhost:${PORT}`);
 console.log(`✅ Manifest disponible en http://localhost:${PORT}/manifest.json`);
