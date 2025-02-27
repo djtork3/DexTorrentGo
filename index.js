@@ -9,7 +9,7 @@ import fs from 'fs';
 
 const { addonBuilder, serveHTTP } = pkg;
 const app = express();
-const PORT = process.env.PORT || 10000;  // Render asigna el puerto automáticamente
+const PORT = process.env.PORT || 8000;  // Render asigna el puerto automáticamente
 
 // 📌 Servir manifest.json manualmente
 app.get('/manifest.json', (req, res) => {
