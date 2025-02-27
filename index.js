@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import net from 'net';
 import bodyParser from 'body-parser';
-import { networkInterfaces } from 'os'; // Importación corregida
+import { networkInterfaces } from 'os';
 import { handleCatalog } from './catalogHandler.js';
 import { handleStream } from './streamHandler.js';
 import { handleMetadata } from './metadataHandler.js';
@@ -12,33 +12,43 @@ import { torrents } from './torrents.js';
 const { addonBuilder } = pkg;
 const app = express();
 
-// Configuración CORS para permitir solicitudes desde Stremio
+// Configuración CORS extendida
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST']
+  methods: '*',
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Configuración del addon Stremio
+// Configuración del addon
 const builder = new addonBuilder({
-  "id": "community.gaDexTorrentGo",
-  "name": "DexTorrentGo",
-  "version": "1.0.3",
-  "resources": ["catalog", "stream", "meta"],
-  "types": ["movie", "series", "telenovelas"],
-  "catalogs": [
-    { "type": "movie", "id": "movies", "name": "Películas" },
-    { "type": "series", "id": "series", "name": "Series" },
-    { "type": "telenovelas", "id": "telenovelas", "name": "Telenovelas" }
+  id: "community.gaDexTorrentGo",
+  name: "DexTorrentGo",
+  version: "1.0.4",
+  resources: ["catalog", "stream", "meta"],
+  types: ["movie", "series"],
+  catalogs: [
+    {
+      type: "movie",
+      id: "movies",
+      name: "Películas",
+      extra: [{ name: "search", isRequired: false }]
+    },
+    {
+      type: "series",
+      id: "series",
+      name: "Series",
+      extra: [{ name: "search", isRequired: false }]
+    }
   ],
-  "background": "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
-  "logo": "https://i.ibb.co/jvZWxGLS/logo.png",
-  "behaviorHints": {
-    "configurable": true,
-    "configurationRequired": false
+  background: "https://i.ibb.co/LDDm7Mtn/ab1d7366-fae1-4d35-9ebb-8823a1de85f5.png",
+  logo: "https://i.ibb.co/jvZWxGLS/logo.png",
+  behaviorHints: {
+    configurable: true,
+    configurationRequired: false
   }
 });
 
-// Handlers del addon
+// Handlers
 builder.defineCatalogHandler(handleCatalog);
 builder.defineStreamHandler(handleStream);
 builder.defineMetaHandler(handleMetadata);
@@ -51,77 +61,77 @@ app.use(express.static('public'));
 
 // Endpoints del addon
 app.get('/manifest.json', (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache');
-  res.json(addonInterface.manifest);
+  res.set({
+    'Cache-Control': 'no-store, max-age=0',
+    'Content-Type': 'application/json'
+  }).json(addonInterface.manifest);
 });
 
-app.get('/catalog/:type/:id.json', (req, res) => {
-  handleCatalog({ type: req.params.type, id: req.params.id }, (error, catalog) => {
-    error ? res.status(500).json({ error: error.message }) : res.json(catalog);
-  });
-});
+app.get('/:resource(meta|stream|catalog)/:type/:id.json', async (req, res) => {
+    const { resource, type, id } = req.params;
 
-app.get('/stream/:type/:id.json', (req, res) => {
-  handleStream({ type: req.params.type, id: req.params.id }, (error, stream) => {
-    error ? res.status(500).json({ error: error.message }) : res.json(stream);
-  });
-});
+    console.log(`📥 Solicitud recibida: ${resource} ${type}/${id}`);
 
-app.get('/meta/:type/:id.json', (req, res) => {
-  handleMetadata({ type: req.params.type, id: req.params.id }, (error, meta) => {
-    error ? res.status(500).json({ error: error.message }) : res.json(meta);
-  });
-});
+    let handler;
+    if (resource === 'catalog') handler = handleCatalog;
+    else if (resource === 'stream') handler = handleStream;
+    else if (resource === 'meta') handler = handleMetadata;
 
-// API endpoints
-app.get('/api/torrents', (req, res) => {
-  res.json(torrents || []);
-});
-
-app.post('/api/torrents', (req, res) => {
-  const requiredFields = ['id', 'title', 'magnet', 'description', 'type'];
-  if (!requiredFields.every(field => req.body[field])) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios' });
-  }
-
-  const newTorrent = { ...req.body, added: new Date().toISOString() };
-  torrents.push(newTorrent);
-  res.status(201).json(newTorrent);
-});
-
-// Verificación y arranque del servidor
-const checkPort = (port, callback) => {
-  const server = net.createServer();
-  server.once('error', () => callback(false));
-  server.once('listening', () => {
-    server.close();
-    callback(true);
-  });
-  server.listen(port);
-};
-
-const startServer = (port = 10000) => {
-  checkPort(port, available => {
-    if (!available) {
-      console.log(`🔄 Puerto ${port} ocupado, probando con ${port + 1}`);
-      return startServer(port + 1);
+    if (!handler) {
+        console.error(`❌ No se encontró un handler válido para ${resource}`);
+        return res.status(404).json({ error: `Handler no encontrado para ${resource}` });
     }
 
-    app.listen(port, '0.0.0.0', () => {
-      console.log(`
-      ✅ Servidor listo en: http://localhost:${port}
-      📄 Manifest URL: http://localhost:${port}/manifest.json
-      🌍 Red local: http://${getLocalIp()}:${port}/manifest.json
-      `);
+    try {
+        const response = await handler({ type, id });
+        console.log(`✅ Respuesta exitosa: ${resource} ${type}/${id}`);
+        res.set('Content-Type', 'application/json').json(response || []);
+    } catch (error) {
+        console.error(`❌ Error procesando ${resource}:`, error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+
+// Endpoint de estado
+app.get('/status', (req, res) => {
+  res.json({
+    status: 'online',
+    version: '1.0.4',
+    uptime: process.uptime(),
+    catalogItems: torrents.length
+  });
+});
+
+// Inicio del servidor
+const startServer = (port = 10000) => {
+  const server = net.createServer();
+  server.once('error', () => {
+    console.log(`🔄 Puerto ${port} ocupado, probando ${port + 1}`);
+    startServer(port + 1);
+  });
+  
+  server.once('listening', () => {
+    server.close(() => {
+      app.listen(port, '0.0.0.0', () => {
+        const localIP = Object.values(networkInterfaces())
+          .flat()
+          .find(i => i.family === 'IPv4' && !i.internal)?.address;
+
+        console.log(`
+        🚀 Servidor operativo en:
+        - Local:   http://localhost:${port}
+        - Red:     http://${localIP}:${port}
+        ----------------------------------
+        🔗 Enlaces Stremio:
+        - Manifest:   http://localhost:${port}/manifest.json
+        - Status:     http://localhost:${port}/status
+        `);
+      });
     });
   });
+  
+  server.listen(port);
 };
-
-// Función para obtener IP local (versión corregida)
-const getLocalIp = () => {
-    return Object.values(networkInterfaces())
-      .flat()
-      .find(i => i.family === 'IPv4' && !i.internal)?.address;
-  };
 
 startServer();
