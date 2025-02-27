@@ -1,16 +1,15 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import fs from 'fs';
 import pkg from 'stremio-addon-sdk';
 import { handleMetadata } from './metadataHandler.js';
 import { handleStream } from './streamHandler.js';
 import { handleCatalog } from './catalogHandler.js';
 
-const { addonBuilder } = pkg;
+const { addonBuilder, serveHTTP } = pkg;
+const PORT = process.env.PORT || 10000;
 const app = express();
-const PORT = process.env.PORT || 10000;  // Forzar un solo puerto
 
-// 📌 Servir manifest.json de forma manual
+// 📌 Servir manifest.json manualmente
 app.get('/manifest.json', (req, res) => {
     fs.readFile('./manifest.json', (err, data) => {
         if (err) {
@@ -22,20 +21,15 @@ app.get('/manifest.json', (req, res) => {
     });
 });
 
-// 📌 Cargar y servir el Addon de Stremio
-const builder = new addonBuilder(JSON.parse(fs.readFileSync('./manifest.json')));
+// 📌 Construir el Addon de Stremio
+const manifest = JSON.parse(fs.readFileSync('./manifest.json'));
+const builder = new addonBuilder(manifest);
 builder.defineCatalogHandler(handleCatalog);
 builder.defineStreamHandler(handleStream);
 builder.defineMetaHandler(handleMetadata);
 
-// 📌 Hacer que Stremio use el puerto 10000 correctamente
-const stremioInterface = builder.getInterface();
-app.use('/', (req, res) => {
-    stremioInterface(req, res);
-});
+// 📌 Servir el addon en el puerto correcto
+serveHTTP(builder.getInterface(), { port: PORT });
 
-// 📌 Iniciar el servidor Express
-app.listen(PORT, () => {
-    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`✅ Manifest disponible en http://localhost:${PORT}/manifest.json`);
-});
+console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+console.log(`✅ Manifest disponible en http://localhost:${PORT}/manifest.json`);
