@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "start": "npx forever start index.js && npx forever start server.js"
+  "start": "bash start.sh"
 },
   "keywords": [],
   "author": "",
